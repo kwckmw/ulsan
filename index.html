@@ -64,6 +64,34 @@ header{display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--li
 .err{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;padding:30px;color:var(--muted);font-size:14px;z-index:4;background:#EFE4D3}
 .foot{font-size:11px;color:#9C8468;margin-top:10px;line-height:1.5}
 .maplibregl-ctrl-attrib{font-size:10px}
+
+.smash{display:block;width:100%;margin:0 0 10px;padding:12px;border:0;border-radius:12px;background:#2B1B14;color:#FFE7C7;font-family:inherit;font-size:15px;font-weight:700;letter-spacing:.5px;cursor:pointer}
+.smash small{display:block;font-weight:400;font-size:12px;color:#D9B48F;margin-top:2px}
+body.game .smash{background:var(--red);color:#FFF5EA}
+#hud{position:absolute;left:50%;top:18px;transform:translateX(-50%);z-index:4;display:none;align-items:center;gap:10px;background:rgba(43,27,20,.88);color:#FFE7C7;padding:8px 14px;border-radius:12px;white-space:nowrap}
+#hud .rk{font-family:'Playfair Display',serif;font-style:italic;font-size:30px;line-height:1;color:#FFC24A;min-width:44px;text-align:center}
+#hud .sc{font-size:18px;font-weight:700}
+#hud small{display:block;font-size:11px;color:#D9B48F}
+#weapons{position:absolute;left:8px;right:8px;bottom:10px;z-index:4;display:none;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+#weapons::-webkit-scrollbar{display:none}
+#weapons button{flex:0 0 auto;min-width:58px;padding:7px 6px 6px;border-radius:12px;border:1px solid #4A3226;background:rgba(43,27,20,.9);color:#FFE7C7;font-family:inherit;font-size:11px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+#weapons button b{font-size:20px;line-height:1.1;font-weight:400}
+#weapons button.on{background:var(--red);border-color:#FFC24A}
+#weapons button.cd{opacity:.45}
+#weapons .sys{background:rgba(255,250,242,.95);color:var(--ink);border-color:#D9C7AE}
+body.game .tools, body.game .coord{display:none}
+body.game .zoom{top:auto;bottom:84px}
+body.game .mk{display:none!important}
+#fxl{position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden}
+.boom{position:absolute;border-radius:50%;transform:translate(-50%,-50%) scale(.2);background:radial-gradient(circle,#FFF6C8 0%,#FFB13B 30%,#E8501F 55%,rgba(120,40,20,0) 72%);animation:boom .7s ease-out forwards}
+@keyframes boom{60%{opacity:1}100%{transform:translate(-50%,-50%) scale(1.25);opacity:0}}
+.flash{position:absolute;inset:0;background:#FFFBEA;animation:flash 1.2s ease-out forwards}
+@keyframes flash{0%{opacity:1}100%{opacity:0}}
+.meteor{position:absolute;width:26px;height:26px;border-radius:50%;background:radial-gradient(circle,#FFF2B0,#FF7A1A 60%,rgba(255,80,0,0) 75%);box-shadow:0 0 30px 10px rgba(255,120,30,.6)}
+.toast{position:absolute;left:50%;top:84px;transform:translateX(-50%);z-index:5;background:rgba(43,27,20,.9);color:#FFE7C7;padding:7px 14px;border-radius:999px;font-size:13px;white-space:nowrap;animation:toast 1.6s ease forwards}
+@keyframes toast{0%{opacity:0;transform:translate(-50%,6px)}15%{opacity:1;transform:translate(-50%,0)}80%{opacity:1}100%{opacity:0}}
+.pop{position:absolute;z-index:5;transform:translate(-50%,-50%);color:#FFC24A;font-weight:700;font-size:16px;text-shadow:0 1px 3px #000;animation:pop 1s ease-out forwards}
+@keyframes pop{100%{transform:translate(-50%,-160%);opacity:0}}
 </style>
 </head>
 <body>
@@ -80,6 +108,7 @@ header{display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--li
 </section>
 <div class="pager"><button id="prev" aria-label="이전 장소">‹</button><span id="pageTxt">— <i>/ 10</i></span><button id="next" aria-label="다음 장소">›</button></div>
 
+<button class="smash" id="gameBtn">SMASH 울산 · 도시 파괴 게임<small>건물을 탭해서 부수고 D → SSS 등급에 도전하세요</small></button>
 <div class="chips" id="chips">
   <button class="chip on" data-c="all">전체</button>
   <button class="chip" data-c="tour">10대 관광지</button>
@@ -94,6 +123,18 @@ header{display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--li
   <div class="coord"><div class="pin"></div><div style="min-width:0"><b id="cName">울산광역시 전체</b><small id="cCoord">35.54° N · 129.31° E</small></div></div>
   <div class="zoom"><button id="zin" aria-label="확대">+</button><button id="zout" aria-label="축소">−</button><button id="north" aria-label="북쪽 정렬">N</button></div>
   <div class="tools"><button id="tRoute">오늘 동선</button><button id="t3d" class="on">3D</button><button id="tSpin">둘러보기</button><button id="tHome">울산 전체</button></div>
+  <div id="fxl"></div>
+  <div id="hud"><div class="rk" id="gRank">D</div><div><div class="sc" id="gScore">0</div><small id="gSub">파괴 0동 · 최고 0</small></div></div>
+  <div id="weapons">
+    <button data-w="bomb" class="on"><b>💣</b>폭탄</button>
+    <button data-w="bat"><b>🏏</b>배트</button>
+    <button data-w="laser"><b>⚡</b>레이저</button>
+    <button data-w="meteor"><b>☄️</b>운석</button>
+    <button data-w="quake"><b>〰️</b>지진</button>
+    <button data-w="nuke"><b>☢️</b>핵</button>
+    <button class="sys" id="gReset"><b>🏗️</b>다시 짓기</button>
+    <button class="sys" id="gExit"><b>🗺️</b>나가기</button>
+  </div>
   <div class="err" id="err">지도를 불러오지 못했어요.<br>인터넷 연결을 확인한 뒤 새로고침해 주세요.</div>
 </div>
 
@@ -336,6 +377,261 @@ fetch('https://tiles.openfreemap.org/styles/liberty',{cache:'no-store'}).then(r=
   $('err').style.display='flex';
 });
 setTimeout(()=>{ if(!map.isStyleLoaded() && $('err').style.display!=='flex'){ $('err').innerHTML='지도를 불러오는 데 시간이 오래 걸려요.<br>인터넷 연결을 확인한 뒤 새로고침해 주세요.'; $('err').style.display='flex'; } },20000);
+</script>
+
+<script>
+/* ===== SMASH 울산 : 도시 파괴 게임 ===== */
+const G={on:false,w:'bomb',bld:new Map(),score:0,kills:0,area:'',anim:new Set(),fx:[],dirty:false,cd:{},src:null,srcLayer:null,lastSet:0};
+const WEAP={
+ bomb:{r:60,p:1.1,snd:.8,shake:300},
+ bat:{r:12,p:.45,snd:.35,shake:120,single:true},
+ laser:{r:8,p:2,snd:.4,shake:150,single:true},
+ meteor:{r:170,p:1.6,snd:1,shake:700,delay:650},
+ quake:{r:1400,p:0,snd:.9,shake:2600},
+ nuke:{r:480,p:2.2,snd:1.3,shake:1400,cool:12}
+};
+const RANKS=[[0,'D'],[2000,'C'],[8000,'B'],[25000,'A'],[70000,'S'],[160000,'SS'],[350000,'SSS']];
+const M_LAT=110540; const mx=(lat)=>111320*Math.cos(lat*Math.PI/180);
+function dist(a,b){const x=(a[0]-b[0])*mx(a[1]),y=(a[1]-b[1])*M_LAT;return Math.hypot(x,y)}
+function fmtN(n){return Math.round(n).toLocaleString('ko-KR')}
+function rankOf(sc){let r='D';RANKS.forEach(([t,n])=>{if(sc>=t)r=n});return r}
+
+function polyInfo(ring){
+  let cx=0,cy=0;ring.forEach(p=>{cx+=p[0];cy+=p[1]});cx/=ring.length;cy/=ring.length;
+  const k=mx(cy);let a=0;
+  for(let i=0,j=ring.length-1;i<ring.length;j=i++){a+=((ring[j][0]-cx)*k)*((ring[i][1]-cy)*M_LAT)-((ring[i][0]-cx)*k)*((ring[j][1]-cy)*M_LAT)}
+  return {c:[cx,cy],area:Math.abs(a/2)};
+}
+
+function ensureLayers(){
+  if(map.getSource('g')) return;
+  const ext=map.getStyle().layers.find(l=>l.type==='fill-extrusion');
+  G.src=ext.source; G.srcLayer=ext['source-layer'];
+  map.addSource('g',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
+  map.addSource('fx',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
+  map.addLayer({id:'g-bld',type:'fill-extrusion',source:'g',paint:{
+    'fill-extrusion-color':['case',['==',['get','s'],2],'#5A3E30',['==',['get','s'],1],'#A6583C',
+      ['interpolate',['linear'],['get','h0'],0,'#E3AE90',30,'#D08A6A',100,'#B8664A']],
+    'fill-extrusion-height':['get','h'],'fill-extrusion-base':['min',['get','b'],['get','h']],'fill-extrusion-opacity':0.97}});
+  map.addLayer({id:'g-fx',type:'circle',source:'fx',paint:{
+    'circle-radius':['get','r'],'circle-color':['get','c'],'circle-opacity':['get','o'],'circle-blur':['get','bl'],
+    'circle-pitch-alignment':'map','circle-pitch-scale':'map'}});
+}
+
+function capture(){
+  if(!G.on) return;
+  const feats=map.querySourceFeatures(G.src,{sourceLayer:G.srcLayer});
+  const ctr=map.getCenter().toArray(); let added=0;
+  for(const f of feats){
+    if(f.properties.hide_3d) continue;
+    const polys=f.geometry.type==='Polygon'?[f.geometry.coordinates]:f.geometry.type==='MultiPolygon'?f.geometry.coordinates:[];
+    for(const pc of polys){
+      const ring=pc[0]; if(!ring||ring.length<4) continue;
+      const key=ring.length+':'+ring[0][0].toFixed(6)+','+ring[0][1].toFixed(6)+':'+ring[2][0].toFixed(6);
+      if(G.bld.has(key)) continue;
+      const inf=polyInfo(ring); if(dist(inf.c,ctr)>1600) continue;
+      const h0=Math.max(4,+f.properties.render_height||8), b=+f.properties.render_min_height||0;
+      G.bld.set(key,{k:key,g:{type:'Polygon',coordinates:pc},h0,b,h:h0,t:h0,v:0,s:0,c:inf.c,area:Math.max(30,inf.area)});
+      added++;
+    }
+  }
+  if(G.bld.size>6000){ const arr=[...G.bld.values()].sort((a,b)=>dist(a.c,ctr)-dist(b.c,ctr)); G.bld=new Map(arr.slice(0,6000).map(x=>[x.k,x])); }
+  if(added) pushBld();
+}
+function pushBld(){
+  const fc={type:'FeatureCollection',features:[]};
+  G.bld.forEach(o=>fc.features.push({type:'Feature',geometry:o.g,properties:{h:Math.max(0.5,o.h),b:o.b,h0:o.h0,s:o.s}}));
+  map.getSource('g').setData(fc);
+}
+
+function enterGame(){
+  if(!map.isStyleLoaded()){ toast('지도를 먼저 불러와 주세요'); return; }
+  ensureLayers(); stopSpin(); G.on=true; document.body.classList.add('game');
+  $('hud').style.display='flex'; $('weapons').style.display='flex';
+  $('gameBtn').innerHTML='SMASH 울산 진행 중<small>무기를 고르고 건물을 탭하세요 · 끌어서 이동, 두 손가락으로 회전</small>';
+  const ext=extrusionLayer(); if(ext) map.setLayoutProperty(ext,'visibility','none');
+  try{map.setLayoutProperty('sel-bld','visibility','none')}catch(e){}
+  let p = selIdx>=0 ? PLACES[selIdx] : PLACES[0];
+  if(p.lng<129.15) p=PLACES[0];
+  G.area=p.n+' 일대';
+  $('kicker').textContent='SMASH ULSAN'; $('title').textContent=G.area;
+  $('desc').textContent='건물을 탭해 부수세요. 많이 부술수록 등급이 D에서 SSS까지 올라가요.';
+  if(map.getZoom()<15.2) map.flyTo({center:[p.lng,p.lat],zoom:16.1,pitch:58,bearing:-25,speed:1.4});
+  map.once('idle',()=>{capture(); toast('건물을 탭해서 부수세요!');});
+  hud();
+}
+function exitGame(){
+  G.on=false; document.body.classList.remove('game');
+  $('hud').style.display='none'; $('weapons').style.display='none';
+  $('gameBtn').innerHTML='SMASH 울산 · 도시 파괴 게임<small>건물을 탭해서 부수고 D → SSS 등급에 도전하세요</small>';
+  const ext=extrusionLayer(); if(ext) map.setLayoutProperty(ext,'visibility',is3D?'visible':'none');
+  try{map.setLayoutProperty('sel-bld','visibility','visible')}catch(e){}
+  map.getSource('g').setData({type:'FeatureCollection',features:[]}); G.bld.clear(); G.fx=[];
+  map.getSource('fx').setData({type:'FeatureCollection',features:[]});
+  G.score=0;G.kills=0; home();
+}
+function resetCity(){
+  G.bld.forEach(o=>{o.h=o.h0;o.t=o.h0;o.v=0;o.s=0}); G.fx=[]; G.score=0; G.kills=0;
+  pushBld(); map.getSource('fx').setData({type:'FeatureCollection',features:[]}); hud(); toast('도시를 다시 지었어요');
+}
+
+function best(){ try{return +(localStorage.getItem('smash-ulsan:'+G.area)||0)}catch(e){return 0} }
+function saveBest(){ try{ if(G.score>best()) localStorage.setItem('smash-ulsan:'+G.area,Math.round(G.score)); }catch(e){} }
+function hud(){
+  const r=rankOf(G.score); $('gRank').textContent=r; $('gScore').textContent=fmtN(G.score)+'점';
+  $('gSub').textContent='파괴 '+G.kills+'동 · 최고 '+fmtN(Math.max(best(),G.score));
+  $('stampNum').textContent=r; $('stampSub').textContent='RANK';
+  $('sTitle').textContent=G.area+' 파괴 현황'; $('sBadge').textContent='등급 '+r;
+  const nxt=RANKS.find(([t])=>t>G.score);
+  $('sText').textContent= nxt ? `다음 등급 ${nxt[1]}까지 ${fmtN(nxt[0]-G.score)}점 남았어요.` : '최고 등급 SSS 달성! 울산이 남아나질 않네요.';
+  $('sFacts').style.display='grid';
+  $('sFacts').innerHTML=`<div>점수<b>${fmtN(G.score)}</b></div><div>파괴한 건물<b>${G.kills}동</b></div>`;
+  $('sLink').style.display='none';
+}
+
+/* ---- 공격 ---- */
+function damage(c,r,p,targetKey){
+  let gained=0, killed=0;
+  G.bld.forEach(o=>{
+    if(o.s===2) return;
+    let f;
+    if(targetKey){ if(o.k!==targetKey && dist(o.c,c)>r) return; f = o.k===targetKey?1:Math.max(0,1-dist(o.c,c)/r)*0.5; }
+    else { const d=dist(o.c,c)-Math.sqrt(o.area)/2; if(d>r) return; f=Math.max(0.15,1-Math.max(0,d)/r); }
+    const loss=o.h0*p*f*(0.8+Math.random()*0.4);
+    let t=Math.max(0,o.t-loss);
+    if(t<o.h0*0.18){ t=Math.min(2.5,o.h0*0.12); if(o.s!==2){o.s=2;killed++; smoke(o.c, Math.sqrt(o.area))} }
+    else o.s=1;
+    if(t<o.t){ gained+=(o.t-t)*o.area/10; o.t=t; o.v=0; G.anim.add(o); debris(o.c,Math.min(14,2+Math.sqrt(o.area)/6)); }
+  });
+  if(gained>0){
+    G.score+=gained; G.kills+=killed; saveBest(); hud();
+    const pt=map.project(c); popText(pt,'+'+fmtN(gained));
+  }
+  return gained;
+}
+function quake(){
+  shake(WEAP.quake.shake,10); boomSound(.9,2.2);
+  const c=map.getCenter().toArray(); let i=0;
+  const iv=setInterval(()=>{
+    const pick=[...G.bld.values()].filter(o=>o.s!==2 && dist(o.c,c)<1400);
+    pick.sort(()=>Math.random()-.5).slice(0,Math.ceil(pick.length*0.25)).forEach(o=>damage(o.c,1,0.35,o.k));
+    if(++i>=4) clearInterval(iv);
+  },550);
+}
+function attack(e){
+  if(!G.on) return;
+  initAudio();
+  const W=WEAP[G.w], c=e.lngLat.toArray(), pt=e.point;
+  if(G.cd[G.w] && G.cd[G.w]>Date.now()){ toast('핵 재충전 중… '+Math.ceil((G.cd[G.w]-Date.now())/1000)+'초'); return; }
+  if(G.w==='quake'){ quake(); return; }
+  let tk=null;
+  if(W.single){ const hit=map.queryRenderedFeatures(pt,{layers:['g-bld']})[0];
+    if(!hit){ toast('건물을 정확히 탭하세요'); return; }
+    let best=null,bd=1e9; G.bld.forEach(o=>{const d=dist(o.c,c); if(d<bd){bd=d;best=o}}); tk=best&&best.k; }
+  const fire=()=>{
+    const pp=map.project(c);
+    boomFx(pp, G.w==='nuke'?520:G.w==='meteor'?260:G.w==='bomb'?140:70);
+    if(G.w==='nuke'){ const fl=document.createElement('div'); fl.className='flash'; $('fxl').appendChild(fl); setTimeout(()=>fl.remove(),1300); ring(c,W.r); }
+    if(G.w==='meteor') ring(c,W.r*0.8);
+    shake(W.shake, G.w==='nuke'?16:G.w==='meteor'?11:G.w==='bomb'?6:3);
+    boomSound(W.snd, G.w==='nuke'?2.5:G.w==='meteor'?1.6:.7);
+    blastFx(c,W.r);
+    damage(c,W.r,W.p,tk);
+  };
+  if(G.w==='laser') laserFx(pt);
+  if(G.w==='meteor') meteorFx(pt,W.delay,fire); else fire();
+  if(W.cool){ G.cd[G.w]=Date.now()+W.cool*1000; cooldownUI(G.w,W.cool); }
+}
+
+/* ---- 연출 ---- */
+function mpp(){ const z=map.getZoom(), lat=map.getCenter().lat; return 156543.03*Math.cos(lat*Math.PI/180)/Math.pow(2,z); }
+function blastFx(c,r){ G.fx.push({c:c.slice(),m:r*0.25,grow:r*0.9,life:0,max:.7,col:'#FFB13B',o:.85,bl:.4}); }
+function ring(c,r){ G.fx.push({c:c.slice(),m:r*0.3,grow:r*1.4,life:0,max:1.4,col:'#FFE7C7',o:.5,bl:.15}); }
+function smoke(c,sz){ G.fx.push({c:c.slice(),m:Math.max(10,sz*0.6),grow:sz*0.8,life:0,max:9,col:'#4A403A',o:.45,bl:.9,smoke:true}); }
+function debris(c,n){
+  for(let i=0;i<n;i++){ const a=Math.random()*Math.PI*2, sp=10+Math.random()*40;
+    G.fx.push({c:c.slice(),vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,m:1.5+Math.random()*2.5,grow:0,life:0,max:.8+Math.random()*.7,col:Math.random()<.5?'#7A4A34':'#C9A27E',o:1,bl:0}); }
+}
+function boomFx(pt,size){ const d=document.createElement('div'); d.className='boom'; d.style.left=pt.x+'px'; d.style.top=pt.y+'px'; d.style.width=d.style.height=size+'px'; $('fxl').appendChild(d); setTimeout(()=>d.remove(),800); }
+function laserFx(pt){
+  const W=$('fxl').clientWidth; const sv=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  sv.setAttribute('width','100%'); sv.setAttribute('height','100%'); sv.style.position='absolute'; sv.style.inset='0';
+  sv.innerHTML=`<line x1="${W/2}" y1="-10" x2="${pt.x}" y2="${pt.y}" stroke="#FF2E2E" stroke-width="7" stroke-linecap="round" opacity=".55"/><line x1="${W/2}" y1="-10" x2="${pt.x}" y2="${pt.y}" stroke="#FFF" stroke-width="2.5" stroke-linecap="round"/>`;
+  $('fxl').appendChild(sv); sv.animate([{opacity:1},{opacity:0}],{duration:450,easing:'ease-out'}); setTimeout(()=>sv.remove(),460);
+}
+function meteorFx(pt,ms,done){
+  const m=document.createElement('div'); m.className='meteor'; $('fxl').appendChild(m);
+  const sx=pt.x+260, sy=pt.y-420;
+  m.animate([{left:sx+'px',top:sy+'px',transform:'scale(.6)'},{left:(pt.x-13)+'px',top:(pt.y-13)+'px',transform:'scale(1.6)'}],{duration:ms,easing:'ease-in',fill:'forwards'});
+  whoosh(ms/1000); setTimeout(()=>{m.remove();done()},ms);
+}
+function popText(pt,t){ const d=document.createElement('div'); d.className='pop'; d.textContent=t; d.style.left=pt.x+'px'; d.style.top=(pt.y-20)+'px'; $('fxl').appendChild(d); setTimeout(()=>d.remove(),1000); }
+function toast(t){ const d=document.createElement('div'); d.className='toast'; d.textContent=t; document.querySelector('.mapbox').appendChild(d); setTimeout(()=>d.remove(),1700); }
+function shake(ms,amp){
+  const el=$('map'), end=performance.now()+ms;
+  (function f(){ const now=performance.now(); if(now>end){el.style.transform='';return}
+    const k=amp*(end-now)/ms; el.style.transform=`translate(${(Math.random()-.5)*2*k}px,${(Math.random()-.5)*2*k}px)`; requestAnimationFrame(f); })();
+  try{ navigator.vibrate && navigator.vibrate(Math.min(ms,600)); }catch(e){}
+}
+function cooldownUI(w,sec){
+  const b=document.querySelector(`#weapons [data-w="${w}"]`); b.classList.add('cd');
+  const lbl=b.lastChild; const base='핵';
+  const iv=setInterval(()=>{ const left=Math.ceil((G.cd[w]-Date.now())/1000);
+    if(left<=0){clearInterval(iv); b.classList.remove('cd'); lbl.textContent=base; return} lbl.textContent=base+' '+left; },250);
+}
+
+/* ---- 사운드 (WebAudio로 직접 합성) ---- */
+let AC=null;
+function initAudio(){ if(!AC){ try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){} } if(AC&&AC.state==='suspended') AC.resume(); }
+function boomSound(vol,len){
+  if(!AC) return; const n=AC.sampleRate*len, buf=AC.createBuffer(1,n,AC.sampleRate), d=buf.getChannelData(0);
+  for(let i=0;i<n;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/n,2.2);
+  const s=AC.createBufferSource(); s.buffer=buf; const lp=AC.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=900;
+  lp.frequency.exponentialRampToValueAtTime(80,AC.currentTime+len);
+  const g=AC.createGain(); g.gain.value=Math.min(1,vol*0.8); s.connect(lp).connect(g).connect(AC.destination); s.start();
+  const o=AC.createOscillator(), og=AC.createGain(); o.frequency.setValueAtTime(90,AC.currentTime); o.frequency.exponentialRampToValueAtTime(30,AC.currentTime+len*0.6);
+  og.gain.setValueAtTime(vol*0.6,AC.currentTime); og.gain.exponentialRampToValueAtTime(0.001,AC.currentTime+len*0.6); o.connect(og).connect(AC.destination); o.start(); o.stop(AC.currentTime+len);
+}
+function whoosh(len){
+  if(!AC) return; const n=AC.sampleRate*len, buf=AC.createBuffer(1,n,AC.sampleRate), d=buf.getChannelData(0);
+  for(let i=0;i<n;i++) d[i]=(Math.random()*2-1)*(i/n)*0.4;
+  const s=AC.createBufferSource(); s.buffer=buf; const bp=AC.createBiquadFilter(); bp.type='bandpass'; bp.frequency.setValueAtTime(2500,AC.currentTime); bp.frequency.exponentialRampToValueAtTime(300,AC.currentTime+len);
+  s.connect(bp).connect(AC.destination); s.start();
+}
+
+/* ---- 애니메이션 루프 ---- */
+let lastT=performance.now();
+function loop(now){
+  const dt=Math.min(.05,(now-lastT)/1000); lastT=now;
+  if(G.on && G.anim.size){
+    G.anim.forEach(o=>{ o.v+=60*dt; o.h-=o.v*dt; if(o.h<=o.t){o.h=o.t;G.anim.delete(o)} });
+    G.dirty=true;
+  }
+  if(G.dirty && now-G.lastSet>40){ pushBld(); G.dirty=false; G.lastSet=now; }
+  if(G.on && G.fx.length){
+    const k=1/mpp(), fc={type:'FeatureCollection',features:[]};
+    G.fx=G.fx.filter(p=>{ p.life+=dt; if(p.life>=p.max) return false;
+      const t=p.life/p.max;
+      if(p.vx!==undefined){ p.c[0]+=p.vx*dt/mx(p.c[1]); p.c[1]+=p.vy*dt/M_LAT; p.vx*=.96; p.vy*=.96; }
+      const r=(p.m+p.grow*(p.smoke?Math.min(1,t*3):Math.sqrt(t)))*k;
+      const o=p.smoke? p.o*(t<.1?t*10:1-((t-.1)/.9)) : p.o*(1-t);
+      fc.features.push({type:'Feature',geometry:{type:'Point',coordinates:p.c},properties:{r:Math.max(1,r),c:p.col,o:Math.max(0,o),bl:p.bl}});
+      return true; });
+    map.getSource('fx').setData(fc);
+  }
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+/* ---- 연결 ---- */
+$('gameBtn').onclick=()=>{ initAudio(); G.on?toast('건물을 탭해서 부수세요!'):enterGame(); };
+$('gExit').onclick=exitGame; $('gReset').onclick=resetCity;
+$('weapons').addEventListener('click',e=>{ const b=e.target.closest('[data-w]'); if(!b) return; initAudio();
+  document.querySelectorAll('#weapons [data-w]').forEach(x=>x.classList.toggle('on',x===b)); G.w=b.dataset.w;
+  const tip={bomb:'폭탄: 탭한 곳 반경 60m',bat:'배트: 건물 한 동을 두들겨요',laser:'레이저: 건물 한 동을 관통',meteor:'운석: 반경 170m 대형 피해',quake:'지진: 화면 탭하면 일대가 흔들려요',nuke:'핵: 반경 480m · 12초 재충전'}[G.w];
+  toast(tip); });
+map.on('click',attack);
+map.on('moveend',()=>{ if(G.on) capture(); });
 </script>
 </body>
 </html>
