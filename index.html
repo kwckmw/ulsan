@@ -68,19 +68,26 @@ header{display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--li
 .smash{display:block;width:100%;margin:0 0 10px;padding:12px;border:0;border-radius:12px;background:#2B1B14;color:#FFE7C7;font-family:inherit;font-size:15px;font-weight:700;letter-spacing:.5px;cursor:pointer}
 .smash small{display:block;font-weight:400;font-size:12px;color:#D9B48F;margin-top:2px}
 body.game .smash{background:var(--red);color:#FFF5EA}
-#hud{position:absolute;left:50%;top:18px;transform:translateX(-50%);z-index:4;display:none;align-items:center;gap:10px;background:rgba(43,27,20,.88);color:#FFE7C7;padding:8px 14px;border-radius:12px;white-space:nowrap}
+#hud{position:absolute;left:10px;top:calc(16px + env(safe-area-inset-top,0px));z-index:4;display:none;align-items:center;gap:10px;background:rgba(43,27,20,.88);color:#FFE7C7;padding:8px 14px 8px 10px;border-radius:12px;white-space:nowrap}
 #hud .rk{font-family:'Playfair Display',serif;font-style:italic;font-size:30px;line-height:1;color:#FFC24A;min-width:44px;text-align:center}
 #hud .sc{font-size:18px;font-weight:700}
 #hud small{display:block;font-size:11px;color:#D9B48F}
-#weapons{position:absolute;left:8px;right:8px;bottom:10px;z-index:4;display:none;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
-#weapons::-webkit-scrollbar{display:none}
-#weapons button{flex:0 0 auto;min-width:58px;padding:7px 6px 6px;border-radius:12px;border:1px solid #4A3226;background:rgba(43,27,20,.9);color:#FFE7C7;font-family:inherit;font-size:11px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
-#weapons button b{font-size:20px;line-height:1.1;font-weight:400}
+#weapons{position:absolute;left:8px;right:8px;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:4;display:none;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px}
+#weapons button{min-width:0;padding:7px 2px 6px;border-radius:12px;border:1px solid #4A3226;background:rgba(43,27,20,.9);color:#FFE7C7;font-family:inherit;font-size:11px;line-height:1.2;white-space:nowrap;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+#weapons button b{font-size:22px;line-height:1.1;font-weight:400}
 #weapons button.on{background:var(--red);border-color:#FFC24A}
 #weapons button.cd{opacity:.45}
-#weapons .sys{background:rgba(255,250,242,.95);color:var(--ink);border-color:#D9C7AE}
+#gsys{position:absolute;right:10px;top:calc(16px + env(safe-area-inset-top,0px));z-index:4;display:none;flex-direction:column;gap:6px}
+#gsys button{width:62px;padding:6px 0 5px;border-radius:12px;border:1px solid #D9C7AE;background:rgba(255,250,242,.95);color:var(--ink);font-family:inherit;font-size:11px;line-height:1.2;white-space:nowrap;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px}
+#gsys button b{font-size:18px;line-height:1.1;font-weight:400}
+body.game{overflow:hidden}
+body.game .mapbox{position:fixed;inset:0;height:100vh;height:100dvh;min-height:0;border:0;border-radius:0;z-index:50}
+body.game #hud{display:flex}
+body.game #weapons{display:grid}
+body.game #gsys{display:flex}
+body.game .toast{top:auto;bottom:calc(86px + env(safe-area-inset-bottom,0px))}
 body.game .tools, body.game .coord{display:none}
-body.game .zoom{top:auto;bottom:84px}
+body.game .zoom{top:50%;bottom:auto;transform:translateY(-50%)}
 body.game .mk{display:none!important}
 #fxl{position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden}
 #fxl *{pointer-events:none}
@@ -135,9 +142,8 @@ body.game .mk{display:none!important}
     <button data-w="meteor"><b>☄️</b>운석</button>
     <button data-w="quake"><b>〰️</b>지진</button>
     <button data-w="nuke"><b>☢️</b>핵</button>
-    <button class="sys" id="gReset"><b>🏗️</b>다시 짓기</button>
-    <button class="sys" id="gExit"><b>🗺️</b>나가기</button>
   </div>
+  <div id="gsys"><button id="gReset"><b>🏗️</b>다시 짓기</button><button id="gExit"><b>✕</b>나가기</button></div>
   <div class="err" id="err">지도를 불러오지 못했어요.<br>인터넷 연결을 확인한 뒤 새로고침해 주세요.</div>
 </div>
 
@@ -450,7 +456,7 @@ function pushBld(){
 function enterGame(){
   if(!map.isStyleLoaded()){ toast('지도를 먼저 불러와 주세요'); return; }
   ensureLayers(); stopSpin(); G.on=true; document.body.classList.add('game');
-  $('hud').style.display='flex'; $('weapons').style.display='flex';
+  map.resize(); fxSize(); requestAnimationFrame(()=>{ map.resize(); fxSize(); });
   $('gameBtn').innerHTML='SMASH 울산 진행 중<small>무기를 고르고 건물을 탭하세요 · 끌어서 이동, 두 손가락으로 회전</small>';
   const ext=extrusionLayer(); if(ext) map.setLayoutProperty(ext,'visibility','none');
   try{map.setLayoutProperty('sel-bld','visibility','none')}catch(e){}
@@ -461,11 +467,12 @@ function enterGame(){
   $('desc').textContent='건물을 탭해 부수세요. 많이 부술수록 등급이 D에서 SSS까지 올라가요.';
   if(map.getZoom()<15.2) map.flyTo({center:[p.lng,p.lat],zoom:16.1,pitch:58,bearing:-25,speed:1.4});
   map.once('idle',()=>{capture(); toast('건물을 탭해서 부수세요!');});
+  setTimeout(()=>{ if(G.on&&!G.bld.size) capture(); },2500);
   hud();
 }
 function exitGame(){
   G.on=false; document.body.classList.remove('game');
-  $('hud').style.display='none'; $('weapons').style.display='none';
+  map.resize(); fxSize(); requestAnimationFrame(()=>{ map.resize(); fxSize(); });
   $('gameBtn').innerHTML='SMASH 울산 · 도시 파괴 게임<small>건물을 탭해서 부수고 D → SSS 등급에 도전하세요</small>';
   const ext=extrusionLayer(); if(ext) map.setLayoutProperty(ext,'visibility',is3D?'visible':'none');
   try{map.setLayoutProperty('sel-bld','visibility','visible')}catch(e){}
