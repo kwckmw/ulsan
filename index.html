@@ -74,7 +74,6 @@ body.game .smash{background:var(--red);color:#FFF5EA}
 #hud small{display:block;font-size:11px;color:#D9B48F}
 #weapons{position:absolute;left:8px;right:8px;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:4;display:none;flex-direction:column;gap:5px}
 .wrow{display:grid;grid-template-columns:26px repeat(5,minmax(0,1fr));gap:5px}
-.wrow.nat{grid-template-columns:26px repeat(4,minmax(0,1fr))}
 .wtag{writing-mode:vertical-rl;letter-spacing:2px;font-size:11px;color:#E9D2B4;background:rgba(43,27,20,.62);border-radius:10px;display:flex;align-items:center;justify-content:center}
 .wrow.nat .wtag{background:rgba(31,63,60,.7);color:#CFE7E2}
 #weapons button{min-width:0;height:48px;padding:5px 2px 4px;border-radius:12px;border:1px solid #4A3226;background:rgba(43,27,20,.9);color:#FFE7C7;font-family:inherit;font-size:11px;line-height:1.15;white-space:nowrap;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
@@ -149,7 +148,7 @@ body.game .mk{display:none!important}
   <div id="hud"><div class="rk" id="gRank">D</div><div><div class="sc" id="gScore">0</div><small id="gSub">파괴 0동 · 최고 0</small></div></div>
   <div id="weapons">
     <div class="wrow"><span class="wtag">무기</span><button data-w="bomb" class="on"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="14.5" r="7"/><path d="M14.6 9.4l2.4-2.4" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" fill="none"/><path d="M19.2 2.4l.7 1.7 1.7.7-1.7.7-.7 1.7-.7-1.7-1.7-.7 1.7-.7z"/></svg><span>폭탄</span></button><button data-w="bat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.7 3.3c.8.8.8 2.1 0 2.9L10.2 16.7l-2.9-2.9L17.8 3.3c.8-.8 2.1-.8 2.9 0z"/><path d="M7.9 15.4l1.7 1.7-3.7 3.7a1.2 1.2 0 0 1-1.7-1.7z"/><circle cx="17.6" cy="17.6" r="2.3"/></svg><span>배트</span></button><button data-w="laser"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="10.4" y="1" width="3.2" height="13" rx="1.6"/><path d="M12 14.4l1.7 3.3 3.6-1.3-2 3.3 3.4 1.8H5.3l3.4-1.8-2-3.3 3.6 1.3z"/></svg><span>레이저</span></button><button data-w="nuke"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="2.3"/><g id="nk"><path d="M10.5 9.6L7.2 3.9A9.4 9.4 0 0 1 16.8 3.9l-3.3 5.7a2.9 2.9 0 0 0-3 0z"/></g><use href="#nk" transform="rotate(120 12 12)"/><use href="#nk" transform="rotate(240 12 12)"/></svg><span>핵</span></button><button data-w="exc"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="1.5" y="17.2" width="12.5" height="4.3" rx="2.15"/><path d="M3.3 16.4v-4.6c0-.8.6-1.4 1.4-1.4h3.6l1.4-3.2h2.2v9.2z"/><path d="M11.4 11.8l5.6-6.6 1.8 1.4-5 6.3z"/><path d="M17.6 6.1l3.8 4.6-1.4 1.1-3.4-4z"/><path d="M18.3 11.3h4.4l-1.3 3.8h-3.1z"/></svg><span>굴삭기</span></button></div>
-    <div class="wrow nat"><span class="wtag">재해</span><button data-w="meteor"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="15.6" cy="15.6" r="5.6"/><path d="M2.8 2.8l8.4 6.6M2 9l6.4 3.1M8.2 2l3.2 6.3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg><span>운석</span></button><button data-w="quake"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M1.5 12.5h3.8l2.1-5.8 3 11.6 3-15.3 3 15.3 2-5.8h4.1" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>지진</span></button><button data-w="tornado"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 4h19M5 8.6h14.5M8 13.2h10M10.5 17.6h6M12.5 21.8h2.2" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg><span>토네이도</span></button><button data-w="bolt"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.6 1.5L4.4 13.6h6.3l-1.6 8.9 9.8-12.6h-6.4z"/></svg><span>번개</span></button></div>
+    <div class="wrow nat"><span class="wtag">재해</span><button data-w="meteor"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="15.6" cy="15.6" r="5.6"/><path d="M2.8 2.8l8.4 6.6M2 9l6.4 3.1M8.2 2l3.2 6.3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg><span>운석</span></button><button data-w="quake"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M1.5 12.5h3.8l2.1-5.8 3 11.6 3-15.3 3 15.3 2-5.8h4.1" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>지진</span></button><button data-w="tornado"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 4h19M5 8.6h14.5M8 13.2h10M10.5 17.6h6M12.5 21.8h2.2" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg><span>토네이도</span></button><button data-w="bolt"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.6 1.5L4.4 13.6h6.3l-1.6 8.9 9.8-12.6h-6.4z"/></svg><span>번개</span></button><button data-w="flood"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 8.5c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2M2 13.5c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2M2 18.5c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg><span>홍수</span></button></div>
   </div>
   <div id="excPanel"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="1.5" y="17.2" width="12.5" height="4.3" rx="2.15"/><path d="M3.3 16.4v-4.6c0-.8.6-1.4 1.4-1.4h3.6l1.4-3.2h2.2v9.2z"/><path d="M11.4 11.8l5.6-6.6 1.8 1.4-5 6.3z"/><path d="M17.6 6.1l3.8 4.6-1.4 1.1-3.4-4z"/><path d="M18.3 11.3h4.4l-1.3 3.8h-3.1z"/></svg><span class="et">굴삭기</span><button id="excMinus" aria-label="굴삭기 줄이기">−</button><b id="excN">3</b><button id="excPlus" aria-label="굴삭기 늘리기">+</button><small id="excHint">지도를 탭해 투입</small></div>
   <div id="gsys"><button id="gReset"><b>🏗️</b>다시 짓기</button><button id="gExit"><b>✕</b>나가기</button></div>
@@ -422,7 +421,7 @@ const WEAP={
   meteor:{r:190,p:1.7,v:140,crater:38,scorch:115,fire:.4},
   quake:{r:1100},
   nuke:{r:520,p:2.6,v:170,crater:70,scorch:360,fire:.7,cool:15},
-  exc:{}, tornado:{cool:6}, bolt:{}
+  exc:{}, tornado:{cool:6}, bolt:{}, flood:{cool:10}
 };
 const G={on:false,gen:0,w:'bomb',bld:new Map(),byId:new Map(),list:[],tl:[],score:0,kills:0,area:'',
   anim:new Set(),held:new Set(),molten:new Set(),fires:[],rub:[],craters:[],fis:[],
@@ -470,7 +469,7 @@ function ensureLayers(){
   if(map.getSource('g')) return;
   const ext=map.getStyle().layers.find(l=>l.type==='fill-extrusion');
   G.src=ext&&ext.source; G.srcLayer=ext&&ext['source-layer'];
-  ['g','gs','ga','gr','gc','gq','gx'].forEach(id=>map.addSource(id,{type:'geojson',data:{type:'FeatureCollection',features:[]}}));
+  ['g','gs','ga','gr','gc','gq','gx','gw'].forEach(id=>map.addSource(id,{type:'geojson',data:{type:'FeatureCollection',features:[]}}));
   const fs=firstSymbol();
   map.addLayer({id:'g-crater',type:'fill',source:'gc',paint:{'fill-color':['to-color',['get','col']],'fill-opacity':['get','o']}},fs);
   const lw=k=>['interpolate',['exponential',2],['zoom'],10,['*',['get','w'],.0161*k],20,['*',['get','w'],16.47*k]];
@@ -483,6 +482,7 @@ function ensureLayers(){
   map.addLayer({id:'g-set',type:'fill-extrusion',source:'gs',paint:paint()});
   map.addLayer({id:'g-anim',type:'fill-extrusion',source:'ga',paint:paint()});
   map.addLayer({id:'g-exc',type:'fill-extrusion',source:'gx',paint:{...paint(),'fill-extrusion-opacity':1}});
+  map.addLayer({id:'g-water',type:'fill-extrusion',source:'gw',paint:{...paint(),'fill-extrusion-opacity':.62}});
 }
 function capture(){
   if(!G.on||!G.src) return 0;
@@ -608,7 +608,8 @@ function animStep(dt,now){
   }
 }
 function land(o){
-  if(o.s===2){ o.fallen=true; dustCloud(o); rubbleHeap(o); if(o.h0*o.area>20000) shake(260,clamp(o.h0*o.area/40000,2,7)); }
+  if(o.s===2&&o.wet){ o.fallen=true; wetCollapse(o); rubbleHeap(o); }
+  else if(o.s===2){ o.fallen=true; dustCloud(o); rubbleHeap(o); if(o.h0*o.area>20000) shake(260,clamp(o.h0*o.area/40000,2,7)); }
   else { dustRing(o,3,o.h,.6); chunks(o,6,o.h); }
   recolor(o);
 }
@@ -638,11 +639,13 @@ function toppleImpact(o){
 
 /* ---- 분진·잔해·분화구 ---- */
 function dustFront(o,top){
+  if(o.wet) return;
   if(busy()&&Math.random()<.7) return;
   const a=Math.random()*6.2832, z=top?rnd(0,o.h0*.25):o.h;
   P({k:'smoke',a:o.c,x:Math.cos(a)*o.r,y:Math.sin(a)*o.r,z,vx:Math.cos(a)*rnd(2,6),vy:Math.sin(a)*rnd(2,6),vz:rnd(-1,2),s:o.r*.5+4,g:2.4,max:rnd(3.5,5.5),drag:.98,a0:.6,rgb:Math.random()<.5?DUST:DUST2});
 }
 function dustRing(o,n,z,sc){
+  if(o.wet) return;
   if(busy()) n=Math.min(n,1);
   for(let i=0;i<n;i++){ const a=Math.random()*6.2832;
     P({k:'smoke',a:o.c,x:Math.cos(a)*o.r*.8,y:Math.sin(a)*o.r*.8,z:z+rnd(0,2),vx:Math.cos(a)*rnd(3,9),vy:Math.sin(a)*rnd(3,9),vz:rnd(0,3),s:(o.r*.5+4)*sc+3,g:2.5,max:rnd(3,5),drag:.98,a0:.55,rgb:DUST}); }
@@ -827,7 +830,8 @@ function stepP(p,dt){
   const d=Math.pow(p.drag,dt*60); p.vx*=d; p.vy*=d; p.vz=p.vz*d-p.grav*dt;
   p.x+=p.vx*dt; p.y+=p.vy*dt; p.z+=p.vz*dt;
   if(p.wd){ const f=.4+Math.min(1,p.z/120); p.x+=G.wind[0]*f*dt; p.y+=G.wind[1]*f*dt; }
-  if((p.k==='chunk'||p.k==='glass')&&p.z<0){ p.z=0; p.vz*=-.22; p.vx*=.45; p.vy*=.45; }
+  if(p.float){ p.z=p.float.L; p.vz=0; if(p.float.L<.2) p.life=p.max; }
+  else if((p.k==='chunk'||p.k==='glass')&&p.z<0){ p.z=0; p.vz*=-.22; p.vx*=.45; p.vy*=.45; }
   if(p.trail&&p.z>2){ p.tt=(p.tt||0)-dt; if(p.tt<=0){ p.tt=.06; P({k:'smoke',a:p.a,x:p.x,y:p.y,z:p.z,s:2.2,g:2,max:rnd(1,1.8),a0:.45,rgb:SMK2}); } }
   return true;
 }
@@ -1065,25 +1069,25 @@ function laserStrike(c,onStart,onTick,zfn){
 }
 function batSwing(c,onHit,z){
   const ob={t:0,hit:false,f:(dt,V,cx)=>{
-    ob.t+=dt; proj(c); const RAISE=.45, SW=.35, px=c._x+100, py=c._y-(z||0)*c._z-120, L=160;
+    ob.t+=dt; proj(c); const BS=.62, RAISE=.45, SW=.35, px=c._x+100*BS, py=c._y-(z||0)*c._z-120*BS, L=160*BS;
     let ang;
     if(ob.t<RAISE){ const u=ob.t/RAISE; ang=-2.2-.6*(1-Math.pow(1-u,2)); }
     else { const u=Math.min(1,(ob.t-RAISE)/SW); ang=-2.8+1.85*u*u*u; if(u>=1&&!ob.hit){ ob.hit=true; onHit(); } }
     if(ob.hit) ang=-.95+Math.sin(ob.t*50)*.04*Math.max(0,1-(ob.t-RAISE-SW)*4);
     const fade=ob.t>RAISE+SW+.5?Math.max(0,1-(ob.t-RAISE-SW-.5)/.3):1; if(fade<=0) return false;
     cx.globalAlpha=fade;
-    if(ob.t>RAISE&&!ob.hit){ cx.strokeStyle='rgba(255,255,255,.4)'; cx.lineWidth=22; cx.beginPath(); cx.arc(px,py,L*.85,-2.8+Math.PI,ang+Math.PI,false); cx.stroke(); }
-    cx.save(); cx.translate(px,py); cx.rotate(ang+Math.PI);
+    if(ob.t>RAISE&&!ob.hit){ cx.strokeStyle='rgba(255,255,255,.4)'; cx.lineWidth=22*BS; cx.beginPath(); cx.arc(px,py,L*.85,-2.8+Math.PI,ang+Math.PI,false); cx.stroke(); }
+    cx.save(); cx.translate(px,py); cx.rotate(ang+Math.PI); cx.scale(BS,BS);
     const g=cx.createLinearGradient(0,-12,0,12); g.addColorStop(0,'#E8C18A'); g.addColorStop(.5,'#C68A4E'); g.addColorStop(1,'#8A5A2E'); cx.fillStyle=g;
-    cx.beginPath(); cx.moveTo(0,-4); cx.lineTo(L*.45,-5); cx.quadraticCurveTo(L*.8,-13,L,-11); cx.arc(L,0,11,-Math.PI/2,Math.PI/2); cx.quadraticCurveTo(L*.8,13,L*.45,5); cx.lineTo(0,4); cx.closePath(); cx.fill();
-    cx.fillStyle='#2A2A2A'; cx.fillRect(0,-4.5,L*.28,9); cx.beginPath(); cx.arc(-2,0,6.5,0,7); cx.fill();
+    const LB=160; cx.beginPath(); cx.moveTo(0,-4); cx.lineTo(LB*.45,-5); cx.quadraticCurveTo(LB*.8,-13,LB,-11); cx.arc(LB,0,11,-Math.PI/2,Math.PI/2); cx.quadraticCurveTo(LB*.8,13,LB*.45,5); cx.lineTo(0,4); cx.closePath(); cx.fill();
+    cx.fillStyle='#2A2A2A'; cx.fillRect(0,-4.5,LB*.28,9); cx.beginPath(); cx.arc(-2,0,6.5,0,7); cx.fill();
     cx.restore(); cx.globalAlpha=1;
     return true; }};
   FX.O.push(ob);
 }
 function batHit(o,pt){
   const q=map.unproject([pt.x-60,pt.y+40]), dir=Math.atan2((q.lat-o.c[1])*M_LAT,(q.lng-o.c[0])*mx(o.c[1]));
-  sparks(o.c,24,18,o.h*.6); pow(o.c,'딱!',o.h*.6); shake(160,5); thwack();
+  sparks(o.c,18,14,o.h*.6); pow(o.c,'딱!',o.h*.6); shake(160,5); thwack();
   chunks(o,10,o.h*.7); dustRing(o,3,o.h*.6,.7); shards(o,o.c,0,4); glassSound(.4);
   credit(hurt(o,WEAP.bat.p,0,o.c,{push:true,dir}),o.c);
 }
@@ -1340,6 +1344,45 @@ function strike(o,c){
   FX.O.push(ob);
 }
 
+/* ---- 홍수: 탭한 곳에서 물이 불어나 퍼지고, 반투명 3D 수면이 건물 아래를 잠기게 한 뒤 빠지며 진흙을 남김 ---- */
+const FLOOD={list:[],dirty:false,last:0};
+function flood(c){
+  const gen=G.gen, Rm=rnd(330,400), Lm=rnd(6,8), ph=[0,1,2,3].map(()=>Math.random()*6.28), fr=[2,3,5,7];
+  const F={c:c.slice(),t:0,R:0,L:0,Rm,Lm,shape:a=>1+.13*Math.sin(fr[0]*a+ph[0])+.09*Math.sin(fr[1]*a+ph[1])+.06*Math.sin(fr[2]*a+ph[2])+.04*Math.sin(fr[3]*a+ph[3]),hit:new Set(),gen,foam:0};
+  FLOOD.list.push(F); toast('홍수 발생! 물이 불어나요'); waterSound(24);
+  return F;
+}
+function floodRing(F,R){ const k=mx(F.c[1]), ring=[]; for(let i=0;i<64;i++){ const a=i/64*6.2832, r=Math.max(1,R*F.shape(a)); ring.push([F.c[0]+Math.cos(a)*r/k,F.c[1]+Math.sin(a)*r/M_LAT]); } ring.push(ring[0]); return ring; }
+function floodStep(dt){
+  if(!FLOOD.list.length) return;
+  for(let i=FLOOD.list.length-1;i>=0;i--){
+    const F=FLOOD.list[i]; if(F.gen!==G.gen){ FLOOD.list.splice(i,1); FLOOD.dirty=true; continue; }
+    F.t+=dt; const t=F.t, GROW=7, HOLD=17, END=25;
+    if(t<GROW){ const u=t/GROW; F.R=F.Rm*(1-Math.pow(1-u,2)); F.L=F.Lm*Math.pow(u,.7); }
+    else if(t<HOLD){ F.R=F.Rm; F.L=F.Lm*(1+.03*Math.sin(t*1.7)); }
+    else if(t<END){ const u=(t-HOLD)/(END-HOLD); F.R=F.Rm*(1-.35*u); F.L=F.Lm*(1-u); }
+    else { FLOOD.list.splice(i,1); G.craters.push({type:'Feature',geometry:{type:'Polygon',coordinates:[floodRing(F,F.Rm*.97)]},properties:{col:'#5E5446',o:.3}}); G.dirtyC=true; FLOOD.dirty=true; continue; }
+    FLOOD.dirty=true;
+    // 물살이 닿은 건물: 낮은 건물은 무너지고, 높은 건물은 젖어서 손상
+    if(t<HOLD){ const k=mx(F.c[1]); let gain=0;
+      for(const o of G.list){ if(F.hit.has(o)) continue; const dx=(o.c[0]-F.c[0])*k, dy=(o.c[1]-F.c[1])*M_LAT, d=Math.hypot(dx,dy);
+        if(d-o.r>F.R*F.shape(Math.atan2(dy,dx))) continue; F.hit.add(o); if(o.s===2) continue;
+        if(o.h0<F.Lm*1.7&&Math.random()<.55){ o.wet=true; gain+=hurt(o,1,rnd(.3,2),F.c,{}); }
+        else { touch(o); if(o.s<1){ o.s=1; recolor(o); } gain+=o.area*F.L/25; }
+        if(Math.random()<.5) splash(o,F); }
+      credit(gain,F.c); }
+    // 물살 앞 하얀 거품과 떠다니는 잔해
+    F.foam-=dt; if(t<HOLD&&F.foam<=0){ F.foam=.05;
+      for(let j=0;j<3;j++){ const a=Math.random()*6.2832, r=F.R*F.shape(a)*rnd(.96,1.01);
+        P({k:'smoke',a:F.c,x:Math.cos(a)*r,y:Math.sin(a)*r,z:F.L,vx:Math.cos(a)*rnd(4,10),vy:Math.sin(a)*rnd(4,10),s:rnd(5,9),g:1.4,max:rnd(1.2,2),a0:t<GROW?.75:.35,rgb:[236,244,246]}); }
+      if(Math.random()<.35){ const a=Math.random()*6.2832, r=F.R*rnd(.3,.9);
+        P({k:'chunk',a:F.c,x:Math.cos(a)*r,y:Math.sin(a)*r,z:F.L,vx:Math.cos(a)*rnd(2,6),vy:Math.sin(a)*rnd(2,6),s:rnd(1.2,2.6),max:rnd(5,8),drag:.995,rot:rnd(-1,1),col:RUBC[(Math.random()*RUBC.length)|0],float:F}); } }
+  }
+}
+function wetCollapse(o){ for(let j=0;j<7;j++){ const a=Math.random()*6.2832; P({k:'smoke',a:o.c,x:Math.cos(a)*o.r*.7,y:Math.sin(a)*o.r*.7,z:3,vx:Math.cos(a)*rnd(4,10),vy:Math.sin(a)*rnd(4,10),vz:rnd(6,14),grav:14,s:o.r*.35+3,g:1.8,max:rnd(1.2,2),a0:.75,rgb:[228,238,242]}); } crumble(.3,1.2); }
+function splash(o,F){ for(let j=0;j<3;j++){ const a=Math.random()*6.2832; P({k:'smoke',a:o.c,x:Math.cos(a)*o.r,y:Math.sin(a)*o.r,z:F.L,vx:Math.cos(a)*rnd(3,8),vy:Math.sin(a)*rnd(3,8),vz:rnd(3,8),grav:12,s:rnd(4,7),g:1.6,max:rnd(1,1.6),a0:.7,rgb:[230,240,244]}); } }
+function pushW(){ setSrc('gw',FLOOD.list.filter(F=>F.R>2&&F.L>.15).map(F=>({type:'Feature',geometry:{type:'Polygon',coordinates:[floodRing(F,F.R)]},properties:{h:F.L,b:0,col:'#3F86A0'}}))); FLOOD.dirty=false; FLOOD.last=performance.now(); }
+
 /* ---- 화면 표시 ---- */
 function popText(pt,t){ const d=document.createElement('div'); d.className='pop'; d.textContent=t; d.style.left=pt.x+'px'; d.style.top=(pt.y-20)+'px'; $('fxl').appendChild(d); setTimeout(()=>d.remove(),1000); }
 function toast(t){ document.querySelectorAll('.toast').forEach(x=>x.remove()); const d=document.createElement('div'); d.className='toast'; d.textContent=t; document.querySelector('.mapbox').appendChild(d); setTimeout(()=>d.remove(),1700); }
@@ -1369,8 +1412,8 @@ function clearWorld(){
 }
 function resetCity(){
   clearWorld();
-  for(const o of G.list){ Object.assign(o,{h:o.h0,t:o.h0,v:0,s:0,char:0,cc:0,molten:0,touched:false,mode:null,pending:null,th:0,w:0,burning:false,fallen:false,claim:0}); o.col=toHex(o.c0); }
-  G.tl=[]; pushG(); pushS(); pushA(); pushR(); pushC(); setSrc('gq',[]); EXC.list.forEach(e=>{ e.tgt=null; e.st='seek'; e.wait=rnd(.5,1.2); }); hud(); toast('도시를 다시 지었어요');
+  for(const o of G.list){ Object.assign(o,{h:o.h0,t:o.h0,v:0,s:0,char:0,cc:0,molten:0,touched:false,mode:null,pending:null,th:0,w:0,burning:false,fallen:false,claim:0}); o.col=toHex(o.c0); o.wet=false; }
+  G.tl=[]; FLOOD.list=[]; pushG(); pushS(); pushA(); pushR(); pushC(); setSrc('gq',[]); setSrc('gw',[]); EXC.list.forEach(e=>{ e.tgt=null; e.st='seek'; e.wait=rnd(.5,1.2); }); hud(); toast('도시를 다시 지었어요');
 }
 function enterGame(){
   if(!map.isStyleLoaded()){ toast('지도를 먼저 불러와 주세요'); return; }
@@ -1397,7 +1440,7 @@ function exitGame(){
   try{ map.setLayoutProperty('sel-bld','visibility','visible'); }catch(e){}
   clearWorld(); excClear(); document.body.classList.remove('excsel'); try{ map.setLight(LDEF); }catch(e){}
   G.bld.clear(); G.byId.clear(); G.list=[]; G.tl=[];
-  ['g','gs','ga','gr','gc','gq','gx'].forEach(id=>setSrc(id,[]));
+  FLOOD.list=[]; ['g','gs','ga','gr','gc','gq','gx','gw'].forEach(id=>setSrc(id,[]));
   home();
 }
 
@@ -1411,12 +1454,13 @@ function attack(e){
   if(!G.on) return;
   initAudio();
   const W=WEAP[G.w], pt=e.point, gen=G.gen;
-  if(G.cd[G.w]&&G.cd[G.w]>Date.now()){ toast((G.w==='nuke'?'핵':'토네이도')+' 재충전 중… '+Math.ceil((G.cd[G.w]-Date.now())/1000)+'초'); return; }
+  if(G.cd[G.w]&&G.cd[G.w]>Date.now()){ toast(({nuke:'핵',tornado:'토네이도',flood:'홍수'}[G.w]||'')+' 재충전 중… '+Math.ceil((G.cd[G.w]-Date.now())/1000)+'초'); return; }
   if(!G.list.length){ capture(); pushG(); }
   const tgt=pickBuilding(pt), ground0=e.lngLat.toArray();
   if(G.w==='exc'){ excDeploy(tgt?tgt.c:ground0); return; }
   if(G.w==='quake'){ quake(ground0); }
   else if(G.w==='tornado'){ tornado(ground0); }
+  else if(G.w==='flood'){ flood(ground0); }
   else if(G.w==='bolt'){ lightningStorm(tgt?tgt.c:ground0,tgt); }
   else if(G.w==='bomb'){ const c=tgt?tgt.c:ground0, z=tgt?tgt.h*.7:0;
     dropObj(c,{dur:1.5,size:2,ease:1.6,z,onHit:()=>{ if(gen===G.gen) detonate(c,W,{z,onRoof:!!tgt}); }}); whistle(1.5); }
@@ -1527,6 +1571,10 @@ function thunder(){
   const g=AC.createGain(); g.gain.value=.9; s.connect(hp).connect(g).connect(AC.destination); s.start();
   setTimeout(()=>{ rumble(3.2); boomSound(.5,2); },260);
 }
+function waterSound(len){
+  if(!AC) return; let lv=0; const s=AC.createBufferSource(); s.buffer=noiseBuf(len,t=>{ lv=lv*.6+(Math.random()*2-1)*.4; const env=t<.06?t/.06:t<.3?1:t<.7?.6:Math.max(0,(1-t)/.3)*.6; return lv*env*(1+.25*Math.sin(t*len*1.3)); });
+  const f=AC.createBiquadFilter(); f.type='lowpass'; f.frequency.value=950; const g=AC.createGain(); g.gain.value=.55; s.connect(f).connect(g).connect(AC.destination); s.start();
+}
 function windSound(len){
   if(!AC) return; let lv=0; const s=AC.createBufferSource(); s.buffer=noiseBuf(len,t=>{ lv=lv*.9+(Math.random()*2-1)*.1; const env=t<.12?t/.12:t>.85?(1-t)/.15:1; return lv*env*3*(1+.4*Math.sin(t*len*2.1)); });
   const f=AC.createBiquadFilter(); f.type='bandpass'; f.frequency.value=380; f.Q.value=.7; const g=AC.createGain(); g.gain.value=.9; s.connect(f).connect(g).connect(AC.destination); s.start();
@@ -1555,6 +1603,7 @@ function gameLoop(now){
   if(G.on){
     animStep(dt,now); fireStep(dt); excStep(dt);
     if(EXC.dirty&&now-EXC.last>33) pushX();
+    floodStep(dt); if(FLOOD.dirty&&now-FLOOD.last>50) pushW();
     G.dark=Math.max(0,G.dark-dt*.16); G.flashW=Math.max(0,G.flashW-dt*5);
     if(G.molten.size){ for(const o of G.molten){ o.molten-=dt*.25; if(o.molten<=0){ o.molten=0; o.char=Math.max(o.char,.6); G.molten.delete(o); hold(o,450); G.dirtyS=true; } recolor(o); } G.dirtyA=true; }
     if(G.held.size){ for(const o of G.held) if(now>o.holdT){ G.held.delete(o); G.dirtyA=true; } }
@@ -1581,7 +1630,7 @@ $('weapons').addEventListener('click',e=>{ const b=e.target.closest('[data-w]');
   toast({bomb:'폭탄: 건물에 떨어지면 반경 70m를 날려요',bat:'배트: 한 동을 후려쳐 넘어뜨려요',laser:'레이저: 건물을 위에서부터 녹여요',
     nuke:'핵: 폭격기 투하 · 반경 520m · 15초 재충전',exc:'굴삭기: 지도를 탭하면 그곳에서 계속 철거해요',
     meteor:'운석: 반경 190m, 충격파가 퍼지며 무너져요',quake:'지진: 탭한 곳이 진앙, 고층은 흔들리다 넘어져요',
-    tornado:'토네이도: 13초 동안 떠돌며 휩쓸어요',bolt:'번개: 뇌우가 여러 번 내리치고 불이 나요'}[G.w]); });
+    tornado:'토네이도: 13초 동안 떠돌며 휩쓸어요',bolt:'번개: 뇌우가 여러 번 내리치고 불이 나요',flood:'홍수: 물이 불어나 낮은 건물부터 잠기고 무너져요'}[G.w]); });
 $('excMinus').onclick=()=>{ EXC.n=Math.max(0,EXC.n-1); excSync(); if(!EXC.n){ EXC.center=null; toast('굴삭기를 모두 철수했어요'); } };
 $('excPlus').onclick=()=>{ EXC.n=Math.min(10,EXC.n+1); excSync(); if(!EXC.center) toast('지도를 탭하면 굴삭기가 투입돼요'); };
 map.on('click',attack);
