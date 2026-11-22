@@ -206,7 +206,9 @@ const map = new maplibregl.Map({
   pitch:25, bearing:0, maxPitch:75, attributionControl:{compact:true},
   localIdeographFontFamily:"'Noto Sans KR', sans-serif"
 });
-map.on('error', e => { if(!map.loaded() && e && e.error && /Failed to fetch|NetworkError/i.test(String(e.error.message))) $('err').style.display='flex'; });
+let mapReady=false;
+$('err').addEventListener('click',()=>{ if(mapReady) $('err').style.display='none'; });
+map.on('error', e => { if(!mapReady && e && e.error && /Failed to fetch|NetworkError/i.test(String(e.error.message))) $('err').style.display='flex'; });
 
 function tint(){
   const st = map.getStyle();
@@ -232,7 +234,7 @@ function tint(){
 }
 
 map.on('load', ()=>{
-  $('err').style.display='none';
+  mapReady=true; $('err').style.display='none';
   tint();
   map.addControl(new maplibregl.ScaleControl({maxWidth:80}),'bottom-left');
   // selected building highlight
@@ -393,7 +395,7 @@ fetch('https://tiles.openfreemap.org/styles/liberty',{cache:'no-store'}).then(r=
   $('err').innerHTML='지금 화면에서는 지도 서버 접속이 막혀 있어요.<br><br><b>Claude 앱 미리보기</b>나 파일 앱 미리보기에서는 외부 지도를 불러올 수 없어요.<br>크롬·사파리 같은 브라우저에서 열어주세요.';
   $('err').style.display='flex';
 });
-setTimeout(()=>{ if(!map.isStyleLoaded() && $('err').style.display!=='flex'){ $('err').innerHTML='지도를 불러오는 데 시간이 오래 걸려요.<br>인터넷 연결을 확인한 뒤 새로고침해 주세요.'; $('err').style.display='flex'; } },20000);
+setTimeout(()=>{ if(!mapReady && $('err').style.display!=='flex'){ $('err').innerHTML='지도를 불러오는 데 시간이 오래 걸려요.<br>인터넷 연결을 확인한 뒤 새로고침해 주세요.'; $('err').style.display='flex'; } },20000);
 </script>
 
 <script>
@@ -1485,7 +1487,8 @@ function resetCity(){
   G.tl=[]; FLOOD.list=[]; pushG(); pushS(); pushA(); pushR(); pushC(); setSrc('gq',[]); setSrc('gw',[]); EXC.list.forEach(e=>{ e.tgt=null; e.st='seek'; e.wait=rnd(.5,1.2); }); hud(); toast('도시를 다시 지었어요');
 }
 function enterGame(){
-  if(!map.isStyleLoaded()){ toast('지도를 먼저 불러와 주세요'); return; }
+  if(!mapReady){ toast('지도를 먼저 불러와 주세요'); return; }
+  $('err').style.display='none';
   ensureLayers(); stopSpin(); G.on=true; document.body.classList.add('game');
   map.resize(); fxSize(); requestAnimationFrame(()=>{ map.resize(); fxSize(); });
   $('gameBtn').innerHTML='SMASH 울산 진행 중<small>무기를 고르고 건물을 탭하세요 · 끌어서 이동, 두 손가락으로 회전</small>';
