@@ -420,7 +420,7 @@ const WEAP={
   laser:{r:10,p:.22,single:true},
   meteor:{r:190,p:1.7,v:140,crater:38,scorch:115,fire:.4},
   quake:{r:1100},
-  nuke:{r:520,p:2.6,v:170,crater:70,scorch:360,fire:.7,cool:15},
+  nuke:{r:520,p:2.6,v:170,crater:70,scorch:360,fire:.7,cool:8},
   exc:{}, tornado:{cool:6}, bolt:{}, flood:{cool:10}
 };
 const G={on:false,gen:0,w:'bomb',bld:new Map(),byId:new Map(),list:[],tl:[],score:0,kills:0,area:'',
@@ -840,7 +840,8 @@ function fxLoop(now){
   const c=FX.c, D=FX.dpr; c.setTransform(D,0,0,D,0,0); c.clearRect(0,0,FX.w,FX.h);
   if(G.on){
     const pr=map.getPitch()*Math.PI/180; FX.sp=Math.max(.3,Math.sin(pr)); FX.cp=Math.max(.25,Math.cos(pr));
-    if(G.haze>.005){ c.globalAlpha=1; c.globalCompositeOperation='source-over'; c.fillStyle=`rgba(118,104,92,${G.haze})`; c.fillRect(0,0,FX.w,FX.h); }
+    if(G.haze>.005){ c.globalAlpha=1; c.globalCompositeOperation='source-over'; c.fillStyle=`rgba(118,104,92,${Math.min(.4,G.haze)})`; c.fillRect(0,0,FX.w,FX.h); }
+    if(PIT.list.length){ drawPits(c); c.setTransform(D,0,0,D,0,0); }
   }
   if(FX.O.length||FX.P.length||G.fires.length){
     const V={cp:FX.cp,sp:FX.sp};
@@ -852,6 +853,7 @@ function fxLoop(now){
     const ko=co.filter(o=>{ const r=o.f(dt,V,c); c.setTransform(D,0,0,D,0,0); c.globalAlpha=1; c.globalCompositeOperation='source-over'; return r; });
     FX.O=ko.concat(FX.O);
   }
+  if(G.on&&PIT.list.length) drawPitLabels(c);
   if(G.on&&G.heat>.005){ c.globalCompositeOperation='source-over'; c.fillStyle=`rgba(255,150,60,${G.heat*.3})`; c.fillRect(0,0,FX.w,FX.h); }
   if(G.on&&G.dark>.005){ c.globalCompositeOperation='source-over'; c.fillStyle=`rgba(22,28,48,${Math.min(.32,G.dark*.32)})`; c.fillRect(0,0,FX.w,FX.h); }
   if(G.on&&G.flashW>.005){ c.globalCompositeOperation='source-over'; c.fillStyle=`rgba(236,242,255,${G.flashW*.4})`; c.fillRect(0,0,FX.w,FX.h); }
@@ -927,11 +929,13 @@ function detonateNuke(c){
   explode(c,W.r,{nuke:true,z:60}); mushroom(c,W.r);
   P({k:'shock',a:c,v:W.v,max:W.r*1.12/W.v*FX.ts,col:'255,255,255',lw:4});
   shockDust(c,W); addCrater(c,W.crater,W.scorch);
+  const pit=pitDig(c);
+  setTimeout(()=>{ if(G.on) toast(pit.n>1?`${pit.n}번째 핵! 지하 ${Math.round(pit.Dt)}m까지 파고들어요`:`핵 구덩이 지하 ${Math.round(pit.Dt)}m`); },900);
   blast(c,W,{nuke:true});
   const near=G.list.filter(o=>o.s<2&&dist(o.c,c)<W.r*.9);
   for(let i=0;i<22&&near.length;i++){ const o=near.splice((Math.random()*near.length)|0,1)[0]; ignite(o,dist(o.c,c)/W.v+rnd(.3,2)); }
   setTimeout(()=>{ if(!G.on) return; explosionSound(1.3,4.5); rumble(6); shake(2600,16); },650);
-  if(map.getZoom()>14.6) map.easeTo({zoom:map.getZoom()-.9,pitch:Math.min(66,map.getPitch()+4),duration:4200});
+  if(map.getZoom()>15.3) map.easeTo({zoom:map.getZoom()-.6,pitch:Math.min(66,map.getPitch()+4),duration:4200});
 }
 
 /* ---- 투하·조준·무기 그래픽 ---- */
@@ -1383,6 +1387,71 @@ function wetCollapse(o){ for(let j=0;j<7;j++){ const a=Math.random()*6.2832; P({
 function splash(o,F){ for(let j=0;j<3;j++){ const a=Math.random()*6.2832; P({k:'smoke',a:o.c,x:Math.cos(a)*o.r,y:Math.sin(a)*o.r,z:F.L,vx:Math.cos(a)*rnd(3,8),vy:Math.sin(a)*rnd(3,8),vz:rnd(3,8),grav:12,s:rnd(4,7),g:1.6,max:rnd(1,1.6),a0:.7,rgb:[230,240,244]}); } }
 function pushW(){ setSrc('gw',FLOOD.list.filter(F=>F.R>2&&F.L>.15).map(F=>({type:'Feature',geometry:{type:'Polygon',coordinates:[floodRing(F,F.R)]},properties:{h:F.L,b:0,col:'#3F86A0'}}))); FLOOD.dirty=false; FLOOD.last=performance.now(); }
 
+/* ---- 핵 구덩이: 터질 때마다 지하로 더 깊이 파고듦 ----
+   지도 엔진은 땅 아래를 못 그려서, 구덩이 테두리 안쪽에 깊이별 지층 고리를 아래로 밀려 보이게 겹쳐 그림(먼 쪽 벽만 보이는 원근) */
+const PIT={list:[]};
+const STRATA=[[0,[120,88,62]],[18,[150,104,68]],[55,[168,128,86]],[110,[122,116,110]],[200,[92,86,82]],[330,[66,58,54]],[480,[84,44,28]]];
+function strataCol(d){ let c=STRATA[0][1]; for(const [z,col] of STRATA) if(d>=z) c=col; return c; }
+function pitAt(c,pt){ return PIT.list.find(q=>{ if(dist(q.c,c)<q.Rt*1.25) return true; if(!pt) return false; const s=map.project(q.c); return Math.hypot(s.x-pt.x,s.y-pt.y)<Math.max(48,q.R*(q.c._k||1)*1.5); }); }
+function pitDig(c){
+  let p=pitAt(c);
+  if(!p){ p={c:c.slice(),R:0,Rt:72,D:0,Dt:0,heat:0,n:0,dig:0,lbl:0,ph:[0,1,2].map(()=>Math.random()*6.28)}; PIT.list.push(p); }
+  p.n++; p.Dt+=p.n===1?90:80; if(p.n>1) p.Rt=Math.min(170,p.Rt*1.08); p.heat=1; p.dig=4.5; p.lbl=9;
+  const k=mx(p.c[1]), R2=p.Rt*1.05;
+  G.rub=G.rub.filter(f=>{ const q=f.geometry.coordinates[0][0]; return Math.hypot((q[0]-p.c[0])*k,(q[1]-p.c[1])*M_LAT)>R2; }); G.dirtyR=true;
+  credit(3000*p.n,p.c);
+  return p;
+}
+function pitStep(dt){
+  for(const p of PIT.list){
+    p.R+=(p.Rt-p.R)*Math.min(1,dt*1.4); p.D+=(p.Dt-p.D)*Math.min(1,dt*.55);
+    p.heat=Math.max(0,p.heat-dt/28); p.lbl=Math.max(0,p.lbl-dt);
+    if(p.dig>0){ p.dig-=dt;
+      for(let i=0;i<2;i++){ const a=Math.random()*6.2832, r=p.R*rnd(.1,.6), sp=rnd(.25,.6)*p.R;
+        P({k:'chunk',a:p.c,x:Math.cos(a)*r,y:Math.sin(a)*r,z:-p.D*rnd(.2,.6),vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,vz:rnd(50,95),s:rnd(1.5,3.5),grav:45,max:rnd(2.5,3.5),drag:.99,rot:rnd(-9,9),col:toHex(strataCol(rnd(0,p.D)))}); }
+      if(Math.random()<.5){ const a=Math.random()*6.2832; P({k:'smoke',a:p.c,x:Math.cos(a)*p.R*.3,y:Math.sin(a)*p.R*.3,z:-p.D*.3,vz:rnd(25,45),vx:Math.cos(a)*8,vy:Math.sin(a)*8,s:p.R*.22,g:2.5,max:rnd(3,5),a0:.6,rgb:DUST2}); }
+      if(Math.random()<dt*2) shake(220,3);
+    } else if(p.heat>.15&&Math.random()<p.heat*.6){ const a=Math.random()*6.2832; P({k:'smoke',a:p.c,x:Math.cos(a)*p.R*.25,y:Math.sin(a)*p.R*.25,z:-p.D*.4,vz:rnd(10,20),s:p.R*.18,g:3,max:rnd(4,6),a0:.35*p.heat,rgb:SMK2,wd:1}); }
+  }
+}
+function drawPits(cx){
+  for(const p of PIT.list){
+    if(p.R<2) continue; const a=p.c; proj(a);
+    if(a._x<-500||a._x>FX.w+500||a._y<-500||a._y>FX.h+700) continue;
+    const rim=r=>{ cx.beginPath(); for(let i=0;i<=48;i++){ const t=i/48*6.2832, rr=r*(1+.05*Math.sin(3*t+p.ph[0])+.03*Math.sin(5*t+p.ph[1])); i?cx.lineTo(Math.cos(t)*rr,Math.sin(t)*rr):cx.moveTo(Math.cos(t)*rr,Math.sin(t)*rr); } cx.closePath(); };
+    cx.save(); cx.globalAlpha=1; cx.globalCompositeOperation='source-over';
+    ground(cx,a,0,()=>{ rim(p.R); cx.fillStyle=toHex(strataCol(0)); cx.fill(); cx.clip(); });
+    // 깊이 d의 고리: 깊을수록 작아지고 화면 아래(가까운 쪽)로 모여 터널처럼 수렴 → 더 깊을수록 고리가 촘촘하고 중심이 어두워짐
+    const D=Math.max(1,p.D), lam=p.R*1.5, n=Math.min(44,Math.max(8,Math.round(D/9))), zk=FX.cp/FX.sp;
+    const ring=d=>{ const e=Math.exp(-d/lam), r=p.R*(.14+.86*e); return {r, z:-(p.R-r)*zk*.96}; };
+    for(let i=1;i<=n;i++){
+      const d=D*i/n, q=ring(d), dim=1-.78*Math.min(1,d/560), band=i%2?1.08:.9;
+      const col=strataCol(d).map(v=>Math.round(v*dim*band));
+      ground(cx,a,q.z,(m)=>{ rim(q.r); cx.fillStyle=`rgb(${col.join(',')})`; cx.fill();
+        cx.strokeStyle=`rgba(255,232,200,${.25*dim})`; cx.lineWidth=1.2*m; cx.stroke(); });
+    }
+    const qb=ring(D), rb=qb.r*.85, hot=Math.max(p.heat,D>460?Math.min(.8,(D-460)/250+.35):0);
+    ground(cx,a,qb.z,()=>{ const g=cx.createRadialGradient(0,0,0,0,0,rb);
+      const fl=strataCol(D).map(v=>Math.round(v*Math.max(.12,.5-D/1000)));
+      g.addColorStop(0,hot>.05?`rgb(${Math.round(30+225*hot)},${Math.round(20+110*hot)},${Math.round(14+16*hot)})`:`rgb(${fl.join(',')})`); g.addColorStop(1,`rgb(${fl.map(v=>Math.round(v*.6)).join(',')})`); cx.fillStyle=g; rim(rb); cx.fill(); });
+    if(hot>.05){ cx.globalCompositeOperation='lighter';
+      ground(cx,a,qb.z,()=>{ const g=cx.createRadialGradient(0,0,0,0,0,p.R*.7); g.addColorStop(0,`rgba(255,120,30,${.7*hot})`); g.addColorStop(1,'rgba(255,60,0,0)'); cx.fillStyle=g; cx.beginPath(); cx.arc(0,0,p.R*.7,0,7); cx.fill(); });
+      cx.globalCompositeOperation='source-over'; }
+    cx.restore();
+    ground(cx,a,0,(m)=>{ rim(p.R); cx.strokeStyle='rgba(58,38,26,.75)'; cx.lineWidth=3*m; cx.stroke(); rim(p.R*1.06); cx.strokeStyle='rgba(150,112,80,.45)'; cx.lineWidth=5*m; cx.stroke(); });
+
+  }
+}
+
+function drawPitLabels(cx){
+  for(const p of PIT.list){ const a=p.c; proj(a);
+    if(p.lbl>0){ cx.setTransform(FX.dpr,0,0,FX.dpr,0,0); cx.globalCompositeOperation='source-over'; const txt=`지하 ${Math.round(p.D)}m`, y=a._y-p.R*a._k*FX.cp-22; cx.globalAlpha=Math.min(1,p.lbl/1.5);
+      cx.font='700 13px "Noto Sans KR",sans-serif'; const w=cx.measureText(txt).width+18;
+      cx.fillStyle='rgba(43,27,20,.88)'; cx.beginPath(); cx.roundRect?cx.roundRect(a._x-w/2,y-13,w,26,13):cx.rect(a._x-w/2,y-13,w,26); cx.fill();
+      cx.fillStyle='#FFC24A'; cx.textAlign='center'; cx.textBaseline='middle'; cx.fillText(txt,a._x,y+1); cx.globalAlpha=1; }
+  }
+}
+
 /* ---- 화면 표시 ---- */
 function popText(pt,t){ const d=document.createElement('div'); d.className='pop'; d.textContent=t; d.style.left=pt.x+'px'; d.style.top=(pt.y-20)+'px'; $('fxl').appendChild(d); setTimeout(()=>d.remove(),1000); }
 function toast(t){ document.querySelectorAll('.toast').forEach(x=>x.remove()); const d=document.createElement('div'); d.className='toast'; d.textContent=t; document.querySelector('.mapbox').appendChild(d); setTimeout(()=>d.remove(),1700); }
@@ -1407,7 +1476,7 @@ function hud(){
 }
 function clearWorld(){
   G.gen++; G.anim.clear(); G.held.clear(); G.molten.clear(); G.fires=[]; G.rub=[]; G.craters=[]; G.fis=[]; G.light=null; G.haze=0; G.heat=0;
-  FX.P=[]; FX.O=[]; G.score=0; G.kills=0; G.killT=[]; G.dark=0; G.flashW=0;
+  FX.P=[]; FX.O=[]; G.score=0; G.kills=0; G.killT=[]; G.dark=0; G.flashW=0; PIT.list=[];
   try{ map.setLight(LBASE); }catch(e){}
 }
 function resetCity(){
@@ -1466,7 +1535,7 @@ function attack(e){
     dropObj(c,{dur:1.5,size:2,ease:1.6,z,onHit:()=>{ if(gen===G.gen) detonate(c,W,{z,onRoof:!!tgt}); }}); whistle(1.5); }
   else if(G.w==='meteor'){ const c=tgt?tgt.c:ground0;
     dropObj(c,{dur:1.9,size:1.8,meteor:true,ease:1.4,onHit:()=>{ if(gen===G.gen) detonate(c,W,{big:true}); }}); whoosh(1.9); }
-  else if(G.w==='nuke'){ nukeSequence(ground0,()=>{ if(gen===G.gen) detonateNuke(ground0); }); }
+  else if(G.w==='nuke'){ const pz=pitAt(ground0,pt), nc=pz?pz.c.slice():ground0; nukeSequence(nc,()=>{ if(gen===G.gen) detonateNuke(nc); }); }
   else {
     if(!tgt){ toast('건물을 정확히 탭하세요'); return; }
     if(G.w==='laser') laserAttack(tgt); else batSwing(tgt.c,()=>{ if(gen===G.gen) batHit(tgt,pt); },tgt.h*.6);
@@ -1604,6 +1673,7 @@ function gameLoop(now){
     animStep(dt,now); fireStep(dt); excStep(dt);
     if(EXC.dirty&&now-EXC.last>33) pushX();
     floodStep(dt); if(FLOOD.dirty&&now-FLOOD.last>50) pushW();
+    pitStep(dt);
     G.dark=Math.max(0,G.dark-dt*.16); G.flashW=Math.max(0,G.flashW-dt*5);
     if(G.molten.size){ for(const o of G.molten){ o.molten-=dt*.25; if(o.molten<=0){ o.molten=0; o.char=Math.max(o.char,.6); G.molten.delete(o); hold(o,450); G.dirtyS=true; } recolor(o); } G.dirtyA=true; }
     if(G.held.size){ for(const o of G.held) if(now>o.holdT){ G.held.delete(o); G.dirtyA=true; } }
@@ -1628,7 +1698,7 @@ $('weapons').addEventListener('click',e=>{ const b=e.target.closest('[data-w]');
   document.querySelectorAll('#weapons [data-w]').forEach(x=>x.classList.toggle('on',x===b)); G.w=b.dataset.w;
   excPanel();
   toast({bomb:'폭탄: 건물에 떨어지면 반경 70m를 날려요',bat:'배트: 한 동을 후려쳐 넘어뜨려요',laser:'레이저: 건물을 위에서부터 녹여요',
-    nuke:'핵: 폭격기 투하 · 반경 520m · 15초 재충전',exc:'굴삭기: 지도를 탭하면 그곳에서 계속 철거해요',
+    nuke:'핵: 같은 자리에 또 떨어뜨리면 더 깊이 파고들어요 · 8초 재충전',exc:'굴삭기: 지도를 탭하면 그곳에서 계속 철거해요',
     meteor:'운석: 반경 190m, 충격파가 퍼지며 무너져요',quake:'지진: 탭한 곳이 진앙, 고층은 흔들리다 넘어져요',
     tornado:'토네이도: 13초 동안 떠돌며 휩쓸어요',bolt:'번개: 뇌우가 여러 번 내리치고 불이 나요',flood:'홍수: 물이 불어나 낮은 건물부터 잠기고 무너져요'}[G.w]); });
 $('excMinus').onclick=()=>{ EXC.n=Math.max(0,EXC.n-1); excSync(); if(!EXC.n){ EXC.center=null; toast('굴삭기를 모두 철수했어요'); } };
